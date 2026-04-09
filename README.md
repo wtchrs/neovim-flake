@@ -4,7 +4,7 @@ This flake provides a wrapped Neovim package whose configuration is bundled into
 
 ## Getting started
 
-Run the following command:
+Run the following commands:
 
 ```sh
 nix run github:wtchrs/neovim-flake
@@ -49,4 +49,14 @@ If you want to use this flake in your NixOS configuration, use the following set
     inputs.neovim-flake.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 }
+```
+
+## Dev shell
+
+You can start the Nix development shell with LSPs and formatters for Nix and Lua.
+
+```sh
+nix develop
+# or with your favorite shell
+nix develop -c zsh
 ```
