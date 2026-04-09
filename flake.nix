@@ -1,8 +1,8 @@
 {
-  description = "Neovim with configuration";
+  description = "Neovim configuration flake";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
   };
 
   outputs =
