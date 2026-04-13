@@ -47,11 +47,14 @@
         {
           default = pkgs.mkShell {
             packages = with pkgs; [
+              # nix
               nil
               nixd
+              statix
+
+              # lua
               stylua
               lua-language-server
-              git
             ];
 
             shellHook = ''
