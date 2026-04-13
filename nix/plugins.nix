@@ -35,7 +35,6 @@ with pkgs.vimPlugins;
   nvim-web-devicons
   persistence-nvim
   plenary-nvim
-  presence-nvim
   rustaceanvim
   SchemaStore-nvim
   snacks-nvim
