@@ -51,6 +51,10 @@ If you want to use this flake in your NixOS configuration, use the following set
 }
 ```
 
+## tmux integration
+
+If you use tmux, add the [christoomey/vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator) to your tmux config for seamless navigation between Neovim and tmux panes.
+
 ## Dev shell
 
 You can start the Nix development shell with LSPs and formatters for Nix and Lua.
