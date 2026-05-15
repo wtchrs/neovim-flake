@@ -14,6 +14,7 @@ with pkgs.vimPlugins;
   friendly-snippets
   gitsigns-nvim
   grug-far-nvim
+  im-select-nvim
   lazydev-nvim
   lualine-nvim
   neo-tree-nvim
