@@ -33,7 +33,10 @@ return function(lazyPath)
 
       {
         "nvim-treesitter/nvim-treesitter",
-        parser_install_dir = vim.fn.stdpath("data") .. "/nvim/parsers",
+        opts = {
+          ensure_installed = {},
+          auto_install = false,
+        },
       },
 
       { import = "lazyvim.plugins.extras.editor.neo-tree" },

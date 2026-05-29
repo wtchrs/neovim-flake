@@ -31,16 +31,4 @@ return {
       },
     },
   },
-
-  {
-    "neovim/nvim-lspconfig",
-    config = function()
-      -- Load all default LSP configs
-      local s = {}
-      for _, f in ipairs(vim.api.nvim_get_runtime_file("lsp/*.lua", true)) do
-        table.insert(s, vim.fn.fnamemodify(f, ":t:r"))
-      end
-      vim.lsp.enable(s)
-    end,
-  },
 }
