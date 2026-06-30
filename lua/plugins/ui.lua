@@ -41,11 +41,6 @@ return {
           bufferline.style_preset.minimal,
         },
         separator_style = { "", "" },
-        hover = {
-          enabled = true,
-          delay = 20,
-          reveal = { "close" },
-        },
       },
     },
   },
