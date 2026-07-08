@@ -38,6 +38,7 @@ let
     gcc
     gnumake
     tree-sitter
+    xxd
   ];
 in
 pkgs.symlinkJoin {

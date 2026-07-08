@@ -58,6 +58,11 @@ return {
   },
 
   {
-    "dstein64/vim-startuptime",
+    "RaafatTurki/hex.nvim",
+    config = function()
+      require("hex").setup()
+    end,
   },
+
+  { "dstein64/vim-startuptime" },
 }
