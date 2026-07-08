@@ -11,23 +11,6 @@ return {
     opts = function(_, opts)
       opts.servers = opts.servers or {}
 
-      -- Auto-detect LSP servers available in $PATH
-      local configs = require("lspconfig.configs")
-      for _, f in ipairs(vim.api.nvim_get_runtime_file("lsp/*.lua", true)) do
-        local server = vim.fn.fnamemodify(f, ":t:r")
-        if not opts.servers[server] then
-          local ok, config = pcall(function()
-            return configs[server]
-          end)
-          if ok and config and config.default_config and config.default_config.cmd then
-            local cmd = config.default_config.cmd[1]
-            if cmd and vim.fn.executable(cmd) == 1 then
-              opts.servers[server] = { mason = false }
-            end
-          end
-        end
-      end
-
       -- Enable awk_ls
       opts.servers.awk_ls = true
 
