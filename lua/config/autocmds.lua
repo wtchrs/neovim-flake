@@ -3,14 +3,20 @@
 -- Add any additional autocmds here
 
 -- Set highlight
+local function set_custom_highlights()
+  -- Change inlay hint color
+  vim.api.nvim_set_hl(0, "NonText", { fg = "#50586E" })
+  -- Change completion menu color
+  vim.api.nvim_set_hl(0, "Pmenu", { bg = "#2e3440" })
+  -- Make quotation marks easier to see
+  vim.api.nvim_set_hl(0, "Quote", { link = "String" })
+end
+
+set_custom_highlights()
+
 vim.api.nvim_create_autocmd({ "ColorScheme", "LspAttach" }, {
   pattern = "*",
-  callback = function()
-    -- Change inlay hint color
-    vim.api.nvim_set_hl(0, "NonText", { fg = "#50586E" })
-    -- Change completion menu color
-    vim.api.nvim_set_hl(0, "Pmenu", { bg = "#2e3440" })
-  end,
+  callback = set_custom_highlights,
 })
 
 vim.api.nvim_create_autocmd("FileType", {
