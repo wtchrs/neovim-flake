@@ -55,6 +55,9 @@ return {
           server_opts.mason = false
         end
       end
+
+      -- Use `tiny-inline-diagnostic.nvim` instead
+      opts.diagnostics.virtual_text = false
     end,
   },
 

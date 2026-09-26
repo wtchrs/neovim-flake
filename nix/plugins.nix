@@ -40,6 +40,7 @@ with pkgs.vimPlugins;
   rustaceanvim
   SchemaStore-nvim
   snacks-nvim
+  tiny-inline-diagnostic-nvim
   todo-comments-nvim
   trouble-nvim
   ts-comments-nvim
@@ -48,11 +49,23 @@ with pkgs.vimPlugins;
   vim-tmux-navigator
   which-key-nvim
 
-  { name = "mini.ai"; path = mini-nvim; }
+  {
+    name = "mini.ai";
+    path = mini-nvim;
+  }
   # { name = "mini.bufremove"; path = mini-nvim; }
   # { name = "mini.comment"; path = mini-nvim; }
-  { name = "mini.icons"; path = mini-nvim; }
+  {
+    name = "mini.icons";
+    path = mini-nvim;
+  }
   # { name = "mini.indentscope"; path = mini-nvim; }
-  { name = "mini.pairs"; path = mini-nvim; }
-  { name = "mini.surround"; path = mini-nvim; }
+  {
+    name = "mini.pairs";
+    path = mini-nvim;
+  }
+  {
+    name = "mini.surround";
+    path = mini-nvim;
+  }
 ]
