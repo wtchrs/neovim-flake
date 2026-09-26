@@ -39,7 +39,6 @@ return function(lazyPath)
         },
       },
 
-      { import = "lazyvim.plugins.extras.editor.neo-tree" },
       { import = "lazyvim.plugins.extras.coding.mini-surround" },
       { import = "lazyvim.plugins.extras.dap.core" },
       { import = "lazyvim.plugins.extras.lang.clangd" },
