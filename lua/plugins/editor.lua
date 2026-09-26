@@ -50,7 +50,12 @@ return {
     "snacks.nvim",
     opts = {
       picker = {
-        sources = { explorer = { layout = { auto_hide = { "input" } } } },
+        sources = {
+          explorer = {
+            formatters = { file = { git_status_hl = true } },
+            layout = { auto_hide = { "input" } },
+          },
+        },
         win = { input = { keys = { ["<Esc>"] = { "close", mode = { "n", "i" } } } } },
       },
       scroll = { enabled = false },

@@ -10,6 +10,22 @@ local function set_custom_highlights()
   vim.api.nvim_set_hl(0, "Pmenu", { bg = "#2e3440" })
   -- Make quotation marks easier to see
   vim.api.nvim_set_hl(0, "Quote", { link = "String" })
+
+  -- Match Neo-tree's Git status colors in Snacks explorer.
+  local git_highlights = {
+    Added = { link = "GitSignsAdd" },
+    Modified = { link = "GitSignsChange" },
+    Deleted = { link = "GitSignsDelete" },
+    Renamed = { link = "GitSignsChange" },
+    Copied = { link = "GitSignsChange" },
+    Staged = { link = "GitSignsAdd" },
+    Untracked = { fg = "#ff8700", italic = true },
+    Ignored = { fg = "#626262" },
+    Unmerged = { fg = "#ff8700", italic = true, bold = true },
+  }
+  for status, highlight in pairs(git_highlights) do
+    vim.api.nvim_set_hl(0, "SnacksPickerGitStatus" .. status, highlight)
+  end
 end
 
 set_custom_highlights()
