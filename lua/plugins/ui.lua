@@ -57,5 +57,36 @@ return {
         },
       },
     },
+
+    config = function(_, opts)
+      local modicator = require("modicator")
+      modicator.setup(opts)
+
+      local function set_mode_backgrounds()
+        local normal = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
+        local text_color = normal.bg or 0x2e3440
+
+        for _, mode in ipairs(modicator.modes) do
+          local name = mode .. "Mode"
+          local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
+          if hl.fg then
+            if mode == "Normal" then
+              hl.bg = nil
+            else
+              hl.bg = hl.fg
+              hl.fg = text_color
+            end
+            hl.reverse = nil
+            vim.api.nvim_set_hl(0, name, hl)
+          end
+        end
+
+        vim.api.nvim_set_hl(0, "CursorLineSign", { link = "CursorLineNr" })
+        modicator.set_cursor_line_highlight(modicator.hl_name_from_mode(vim.api.nvim_get_mode().mode))
+      end
+
+      set_mode_backgrounds()
+      vim.api.nvim_create_autocmd("ColorScheme", { callback = set_mode_backgrounds })
+    end,
   },
 }
