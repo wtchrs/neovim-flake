@@ -16,6 +16,7 @@ with pkgs.vimPlugins;
   grug-far-nvim
   hex-nvim
   im-select-nvim
+  inc-rename-nvim
   lazydev-nvim
   lualine-nvim
   neo-tree-nvim
