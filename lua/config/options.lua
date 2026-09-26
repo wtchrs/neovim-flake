@@ -7,3 +7,6 @@ vim.opt.conceallevel = 0
 
 -- Set indent size
 vim.opt.shiftwidth = 4
+
+-- Set rounded border for default
+vim.o.winborder = "rounded"

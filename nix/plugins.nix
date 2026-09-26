@@ -8,8 +8,10 @@ with pkgs.vimPlugins;
   blink-cmp
   clangd_extensions-nvim
   cmake-tools-nvim
+  colorful-menu-nvim
   conform-nvim
   crates-nvim
+  edgy-nvim
   flash-nvim
   friendly-snippets
   gitsigns-nvim
@@ -19,6 +21,7 @@ with pkgs.vimPlugins;
   inc-rename-nvim
   lazydev-nvim
   lualine-nvim
+  modicator-nvim
   neo-tree-nvim
   noice-nvim
   nord-nvim
@@ -41,6 +44,7 @@ with pkgs.vimPlugins;
   rustaceanvim
   SchemaStore-nvim
   snacks-nvim
+  tiny-code-action-nvim
   tiny-inline-diagnostic-nvim
   todo-comments-nvim
   trouble-nvim
@@ -69,4 +73,5 @@ with pkgs.vimPlugins;
     name = "mini.surround";
     path = mini-nvim;
   }
+  # { name = "mini.hipatterns"; path = mini-nvim; }
 ]

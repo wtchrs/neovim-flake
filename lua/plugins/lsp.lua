@@ -11,6 +11,19 @@ return {
     opts = function(_, opts)
       opts.servers = opts.servers or {}
 
+      -- tiny-code-action.nvim keymap config
+      opts.servers["*"] = opts.servers["*"] or {}
+      opts.servers["*"].keys = opts.servers["*"].keys or {}
+      table.insert(opts.servers["*"].keys, {
+        "<leader>ca",
+        function()
+          require("tiny-code-action").code_action({})
+        end,
+        mode = { "n", "x" },
+        desc = "Code Action",
+        has = "codeAction",
+      })
+
       -- Enable awk_ls
       opts.servers.awk_ls = true
 
@@ -64,6 +77,41 @@ return {
   -- in order to remove mason dependency
   { "stevearc/conform.nvim", dependencies = {} },
   { "mfussenegger/nvim-lint", dependencies = {} },
+
+  {
+    "rachartier/tiny-code-action.nvim",
+    event = "LspAttach",
+    dependencies = {
+      "folke/snacks.nvim",
+    },
+
+    opts = {
+      backend = "vim",
+      picker = {
+        "snacks",
+        opts = {
+          layout = {
+            preset = function()
+              return vim.o.columns >= 140 and "default" or "vertical"
+            end,
+          },
+        },
+      },
+
+      notify = {
+        enabled = true,
+        on_empty = true,
+      },
+
+      format_title = function(action, _)
+        if action.kind then
+          return string.format("%s  [%s]", action.title, action.kind)
+        end
+
+        return action.title
+      end,
+    },
+  },
 
   -- local plugin for custom commands that print linter information
   {
