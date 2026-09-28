@@ -52,9 +52,27 @@ return {
       picker = {
         sources = {
           explorer = {
+            hidden = true,
+            ignored = true,
+            icons = { git = { ignored = "" } },
+            formatters = { file = { git_status_hl = true } },
+            layout = { auto_hide = { "input" } },
+
             format = function(item, picker)
               local format = require("snacks.picker.format")
               local ret = format.file(item, picker)
+              -- Ignored directories pass their ignored state down to their children.
+              -- Open directories can have no status even when they are ignored.
+              if not item.status then
+                local node = item
+                while node do
+                  if node.ignored then
+                    vim.list_extend(ret, format.file_git_status({ status = "!!" }, picker))
+                    break
+                  end
+                  node = node.parent
+                end
+              end
               -- Porcelain XY: index changes first, working-tree changes second.
               -- Keep the staged icon and append the unstaged status for mixed files.
               if not item.dir and item.status and item.status:match("^[MADRCT][MADRCT]$") then
@@ -71,8 +89,6 @@ return {
               end
               return ret
             end,
-            formatters = { file = { git_status_hl = true } },
-            layout = { auto_hide = { "input" } },
           },
         },
         win = { input = { keys = { ["<Esc>"] = { "close", mode = { "n", "i" } } } } },
