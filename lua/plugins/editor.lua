@@ -52,6 +52,25 @@ return {
       picker = {
         sources = {
           explorer = {
+            format = function(item, picker)
+              local format = require("snacks.picker.format")
+              local ret = format.file(item, picker)
+              -- Porcelain XY: index changes first, working-tree changes second.
+              -- Keep the staged icon and append the unstaged status for mixed files.
+              if not item.dir and item.status and item.status:match("^[MADRCT][MADRCT]$") then
+                local status = require("snacks.picker.source.git").git_status(item.status)
+                if not status.unmerged then
+                  local unstaged = format.file_git_status({ status = " " .. item.status:sub(2, 2) }, picker)
+                  for _, chunk in ipairs(ret) do
+                    if chunk.virt_text and chunk.virt_text[1][2] == "SnacksPickerGitStatusStaged" then
+                      vim.list_extend(chunk.virt_text, unstaged[1].virt_text)
+                      break
+                    end
+                  end
+                end
+              end
+              return ret
+            end,
             formatters = { file = { git_status_hl = true } },
             layout = { auto_hide = { "input" } },
           },
