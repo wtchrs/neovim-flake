@@ -51,6 +51,16 @@ If you want to use this flake in your NixOS configuration, use the following set
 }
 ```
 
+## Treesitter parsers
+
+Treesitter parsers and queries are bundled by Nix and loaded from the Nix store.
+Neovim does not download or compile parsers at startup. Update them by updating
+the flake input and rebuilding the package, rather than running `:TSUpdate` or
+`:TSInstall`.
+
+Run `nix flake check` to verify parser availability and automatic Lua/Nix
+highlighting with empty Neovim data directories.
+
 ## tmux integration
 
 If you use tmux, add the [christoomey/vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator) to your tmux config for seamless navigation between Neovim and tmux panes.

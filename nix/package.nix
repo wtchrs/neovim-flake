@@ -17,6 +17,13 @@ let
 
   lazyPath = pkgs.linkFarm "lazy-plugins" (map mkLazyEntry plugins);
 
+  # lazy.nvim loads the plugin itself, but not its Nix parser/query dependencies.
+  # Expose them as one installation directory for Treesitter and LazyVim.
+  treesitterRuntime = pkgs.symlinkJoin {
+    name = "nvim-treesitter-runtime";
+    paths = pkgs.vimPlugins.nvim-treesitter.withAllGrammars.dependencies;
+  };
+
   configRoot = pkgs.runCommand "${appName}-config" { } ''
     mkdir -p "$out/${appName}"
 
@@ -27,7 +34,7 @@ let
     cat >"$out/${appName}/init.lua" <<EOF
     vim.opt.rtp:prepend("${pkgs.vimPlugins.lazy-nvim}")
     local initLazy = require("config.lazy")
-    initLazy("${lazyPath}")
+    initLazy("${lazyPath}", "${treesitterRuntime}")
     EOF
   '';
 

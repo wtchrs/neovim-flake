@@ -1,4 +1,4 @@
-return function(lazyPath)
+return function(lazyPath, treesitterRuntime)
   require("lazy").setup({
     defaults = {
       lazy = false,
@@ -31,14 +31,6 @@ return function(lazyPath)
     spec = {
       { "LazyVim/LazyVim", import = "lazyvim.plugins" },
 
-      {
-        "nvim-treesitter/nvim-treesitter",
-        opts = {
-          ensure_installed = {},
-          auto_install = false,
-        },
-      },
-
       { import = "lazyvim.plugins.extras.coding.mini-surround" },
       { import = "lazyvim.plugins.extras.editor.inc-rename" },
       { import = "lazyvim.plugins.extras.ui.edgy" },
@@ -58,6 +50,17 @@ return function(lazyPath)
       { import = "lazyvim.plugins.extras.lang.yaml" },
 
       { import = "plugins" },
+
+      {
+        "nvim-treesitter/nvim-treesitter",
+        build = false,
+        opts = function(_, opts)
+          -- Clear the merged defaults/extras list after all imports.
+          -- Parsers and queries are installed and updated exclusively by Nix.
+          opts.ensure_installed = {}
+          opts.install_dir = treesitterRuntime
+        end,
+      },
     },
   })
 end

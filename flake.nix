@@ -39,6 +39,26 @@
         };
       });
 
+      checks = forAllSystems (
+        system:
+        let
+          pkgs = pkgsFor system;
+        in
+        {
+          treesitter = pkgs.runCommand "neovim-treesitter-check" { } ''
+            export HOME="$TMPDIR/home"
+            export XDG_DATA_HOME="$TMPDIR/data"
+            export XDG_CACHE_HOME="$TMPDIR/cache"
+            export XDG_STATE_HOME="$TMPDIR/state"
+            mkdir -p "$HOME"
+
+            timeout 30s ${self.packages.${system}.default}/bin/nvim --headless -i NONE \
+              '+lua dofile("${./tests/treesitter.lua}")'
+            touch "$out"
+          '';
+        }
+      );
+
       devShells = forAllSystems (
         system:
         let
