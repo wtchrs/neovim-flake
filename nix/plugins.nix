@@ -21,7 +21,6 @@ with pkgs.vimPlugins;
   inc-rename-nvim
   lazydev-nvim
   lualine-nvim
-  modicator-nvim
   neo-tree-nvim
   noice-nvim
   nord-nvim
