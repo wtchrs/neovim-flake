@@ -76,7 +76,26 @@ return {
 
   -- in order to remove mason dependency
   { "stevearc/conform.nvim", dependencies = {} },
-  { "mfussenegger/nvim-lint", dependencies = {} },
+  {
+    "mfussenegger/nvim-lint",
+    dependencies = {},
+    opts = function(_, opts)
+      local base = vim.deepcopy(require("lint.linters.golangcilint"))
+
+      opts.linters = opts.linters or {}
+      opts.linters.golangcilint = function()
+        local linter = vim.deepcopy(base)
+        local filename = vim.api.nvim_buf_get_name(0)
+        local package_dir = vim.fs.dirname(filename)
+        local module_root = vim.fs.root(filename, "go.mod")
+
+        linter.cwd = module_root or package_dir
+        linter.args[#linter.args] = module_root and package_dir or filename
+
+        return linter
+      end
+    end,
+  },
 
   {
     "rachartier/tiny-code-action.nvim",
