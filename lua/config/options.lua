@@ -10,3 +10,18 @@ vim.opt.shiftwidth = 4
 
 -- Set rounded border for default
 vim.o.winborder = "rounded"
+
+-- Align the cursor line number to the left and all other numbers to the right.
+function _G.NeovimCustomStatuscolumn()
+  local column = LazyVim.statuscolumn()
+  if vim.v.virtnum == 0 then
+    if vim.v.relnum == 0 and vim.wo.number then
+      column = column:gsub("%%=(%d+) ", "%1%%=  ", 1)
+    else
+      column = column:gsub("%%=(%d+) ", " %%=%1 ", 1)
+    end
+  end
+  return column
+end
+
+vim.opt.statuscolumn = "%!v:lua.NeovimCustomStatuscolumn()"
