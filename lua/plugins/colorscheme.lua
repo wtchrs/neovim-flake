@@ -1,4 +1,8 @@
 return {
+  -- Disable LazyVim default colorscheme plugins
+  { "folke/tokyonight.nvim", enabled = false },
+  { "catppuccin/nvim", name = "catppuccin", enabled = false },
+
   {
     "shaunsingh/nord.nvim",
     event = { "VeryLazy" },
