@@ -58,8 +58,14 @@ Neovim does not download or compile parsers at startup. Update them by updating
 the flake input and rebuilding the package, rather than running `:TSUpdate` or
 `:TSInstall`.
 
-Run `nix flake check` to verify parser availability and automatic Lua/Nix
-highlighting with empty Neovim data directories.
+## Checks
+
+Run `nix flake check` to verify:
+
+- Treesitter parser availability and automatic Lua/Nix highlighting with empty
+  Neovim data directories.
+- LintInfo command evaluation and preservation of global, tab-local, and
+  window-local working directories, including when command evaluation fails.
 
 ## tmux integration
 

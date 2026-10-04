@@ -96,24 +96,31 @@ end
 -- Evaluate linter fields like nvim-lint does (no args; inside linter cwd)
 -- ---------------------------------------------------------------------------
 
-local function with_cwd(cwd, fn, ...)
+local function with_cwd(cwd, fn)
   local cur = vim.fn.getcwd()
+  -- Use the existing scope so evaluation cannot clear a local directory.
+  local cd = vim.cmd.cd
+  if vim.fn.haslocaldir() == 1 then
+    cd = vim.cmd.lcd
+  elseif vim.fn.haslocaldir(-1, 0) == 1 then
+    cd = vim.cmd.tcd
+  end
   local target = cwd
   local changed = target and target ~= "" and cur ~= target
   local mods = { noautocmd = true }
 
   if changed then
-    vim.cmd.cd({ target, mods = mods })
+    cd({ target, mods = mods })
   end
 
-  local results = { pcall(fn, ...) }
+  -- Callers need only the first value (or the error); no unpack is needed.
+  local ok, result = pcall(fn)
 
   if changed then
-    vim.cmd.cd({ cur, mods = mods })
+    cd({ cur, mods = mods })
   end
 
-  local ok = table.remove(results, 1)
-  return ok, table.unpack(results)
+  return ok, result
 end
 
 local function eval_noargs(value, cwd)

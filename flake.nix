@@ -45,6 +45,18 @@
           pkgs = pkgsFor system;
         in
         {
+          lintinfo = pkgs.runCommand "neovim-lintinfo-check" { } ''
+            export XDG_DATA_HOME="$TMPDIR/data"
+            export XDG_CACHE_HOME="$TMPDIR/cache"
+            export XDG_STATE_HOME="$TMPDIR/state"
+            export NVIM_LOG_FILE="$TMPDIR/nvim.log"
+            export LINTINFO_RUNTIME="${./local/lintinfo.nvim}"
+
+            timeout 30s ${pkgs.neovim-unwrapped}/bin/nvim --headless -u NONE -i NONE \
+              '+lua dofile("${./tests/lintinfo.lua}")'
+            touch "$out"
+          '';
+
           treesitter = pkgs.runCommand "neovim-treesitter-check" { } ''
             export HOME="$TMPDIR/home"
             export XDG_DATA_HOME="$TMPDIR/data"
