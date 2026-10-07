@@ -66,6 +66,31 @@ Run `nix flake check` to verify:
   Neovim data directories.
 - LintInfo command evaluation and preservation of global, tab-local, and
   window-local working directories, including when command evaluation fails.
+- Java LSP selection, blink.cmp capabilities, IntelliJ DAP registration,
+  multi-module root selection, and native server startup on Linux.
+
+## Java: IntelliJ language server
+
+Nix bundles JetBrains' `intellij-server`,
+[nvim-intellij-lsp](https://github.com/gipo355/nvim-intellij-lsp).
+
+After rebuilding, open a Java file in a Maven, Gradle, or Bazel project. Run
+`:IntellijAcceptEula` and accept the agreement, then start the server:
+
+```vim
+:lsp enable intellij
+:checkhealth intellij-lsp
+```
+
+- Provide a project JDK through your environment. Set `JAVA_HOME` before launching
+  Neovim to select it explicitly; otherwise the client searches known JDK locations.
+- Organize imports with `<leader>co`; run or debug with `:IntellijRun`,
+  `:IntellijDebug`, or nvim-dap.
+- The first import may take several minutes. Diagnose failures with
+  `:IntellijStatus` and `:IntellijLog`. Use one Neovim instance per project root.
+- Update the server pin in `nix/intellij-server.nix` and the client pin in
+  `nix/plugins.nix`, then rebuild. Avoid `:IntellijInstall` and `:IntellijUpdate`
+  on NixOS.
 
 ## tmux integration
 

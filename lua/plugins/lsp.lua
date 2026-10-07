@@ -3,13 +3,33 @@ return {
   { "mason-org/mason.nvim", enabled = false },
   { "mason-org/mason-lspconfig.nvim", enabled = false },
   { "jay-babu/mason-nvim-dap.nvim", enabled = false },
+  { "mfussenegger/nvim-jdtls", enabled = false },
+
+  {
+    "gipo355/nvim-intellij-lsp",
+    lazy = true,
+    dependencies = { "mfussenegger/nvim-dap" },
+    opts = {
+      kotlin = false,
+      -- LazyVim owns hint visibility and code lens refresh.
+      inlay_hints = "manual",
+      codelens = false,
+      data_sharing = "none",
+    },
+  },
 
   {
     "neovim/nvim-lspconfig",
-    dependencies = {},
+    dependencies = { "gipo355/nvim-intellij-lsp" },
 
     opts = function(_, opts)
       opts.servers = opts.servers or {}
+      opts.servers.jdtls = { enabled = false }
+      opts.servers.intellij = {
+        keys = {
+          { "<leader>co", "<cmd>IntellijOrganizeImports<cr>", desc = "Organize Imports" },
+        },
+      }
 
       -- tiny-code-action.nvim keymap config
       opts.servers["*"] = opts.servers["*"] or {}

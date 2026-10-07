@@ -15,7 +15,12 @@
 
       forAllSystems = f: nixpkgs.lib.genAttrs systems f;
 
-      pkgsFor = system: import nixpkgs { inherit system; };
+      pkgsFor =
+        system:
+        import nixpkgs {
+          inherit system;
+          config.allowUnfreePredicate = pkg: nixpkgs.lib.getName pkg == "intellij-server";
+        };
 
       mkNvim =
         system:
@@ -45,6 +50,18 @@
           pkgs = pkgsFor system;
         in
         {
+          java = pkgs.runCommand "neovim-java-check" { } ''
+            export HOME="$TMPDIR/home"
+            export XDG_DATA_HOME="$TMPDIR/data"
+            export XDG_CACHE_HOME="$TMPDIR/cache"
+            export XDG_STATE_HOME="$TMPDIR/state"
+            mkdir -p "$HOME"
+
+            timeout 60s ${self.packages.${system}.default}/bin/nvim --headless -i NONE \
+              '+lua dofile("${./tests/java.lua}")'
+            touch "$out"
+          '';
+
           lintinfo = pkgs.runCommand "neovim-lintinfo-check" { } ''
             export XDG_DATA_HOME="$TMPDIR/data"
             export XDG_CACHE_HOME="$TMPDIR/cache"

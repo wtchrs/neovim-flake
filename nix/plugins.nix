@@ -1,5 +1,18 @@
 { pkgs, ... }:
 
+let
+  nvim-intellij-lsp = pkgs.vimUtils.buildVimPlugin {
+    pname = "nvim-intellij-lsp";
+    version = "2026-10-08";
+    src = pkgs.fetchFromGitHub {
+      owner = "gipo355";
+      repo = "nvim-intellij-lsp";
+      rev = "92adb1253846819b839f0ab8ccea781b7e2b46f2";
+      hash = "sha256-sGlXZwBL/mmwi8zW0j4C3GLU2D8G/JkEpZhb3d+sbL4=";
+    };
+    dependencies = [ pkgs.vimPlugins.nvim-dap ];
+  };
+in
 with pkgs.vimPlugins;
 [
   lazy-nvim
@@ -29,7 +42,7 @@ with pkgs.vimPlugins;
   nvim-dap-python
   nvim-dap-ui
   nvim-dap-virtual-text
-  nvim-jdtls
+  nvim-intellij-lsp
   nvim-lint
   nvim-lspconfig
   nvim-nio
