@@ -57,6 +57,7 @@ with pkgs.vimPlugins;
   rustaceanvim
   SchemaStore-nvim
   snacks-nvim
+  telescope-fzf-native-nvim
   tiny-code-action-nvim
   tiny-inline-diagnostic-nvim
   todo-comments-nvim
