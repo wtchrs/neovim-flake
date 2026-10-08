@@ -3,11 +3,6 @@
 -- Add any additional keymaps here
 
 local keymap = vim.keymap
-local opt = { noremap = true, silent = true }
-
--- Key:         <leader>;
--- Action:      Enter command mode.
-keymap.set("n", "<leader>;", ":", opt)
 
 -- Key:         Ctrl-e
 -- Action:      Show treesitter capture group for textobject under cursor.

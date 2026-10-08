@@ -24,6 +24,7 @@ with pkgs.vimPlugins;
   colorful-menu-nvim
   conform-nvim
   crates-nvim
+  dropbar-nvim
   edgy-nvim
   flash-nvim
   friendly-snippets

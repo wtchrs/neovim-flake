@@ -10,18 +10,32 @@ return {
       vim.g.nord_disable_background = true
       vim.g.nord_italic = false
 
-      local function set_normal_mode_foreground()
+      local function set_nord_highlights()
         local cursor_line_nr = vim.api.nvim_get_hl(0, { name = "CursorLineNr", link = false })
         vim.api.nvim_set_hl(0, "NormalMode", { fg = cursor_line_nr.fg })
+
+        local colors = require("nord.colors")
+        local dropbar_highlights = {
+          WinBar = { fg = colors.nord4_gui, bg = colors.none },
+          WinBarNC = { fg = colors.nord3_gui_bright, bg = colors.none },
+          DropBarIconUIPickPivot = { fg = colors.nord0_gui, bg = colors.nord13_gui, bold = true },
+          DropBarCurrentContext = { bg = colors.nord2_gui, bold = true },
+          DropBarHover = { bg = colors.nord1_gui },
+          DropBarMenuCurrentContext = { bg = colors.nord2_gui, bold = true },
+          DropBarMenuHoverEntry = { bg = colors.nord1_gui },
+        }
+        for group, highlight in pairs(dropbar_highlights) do
+          vim.api.nvim_set_hl(0, group, highlight)
+        end
       end
 
       vim.api.nvim_create_autocmd("ColorScheme", {
         pattern = "nord",
-        callback = set_normal_mode_foreground,
+        callback = set_nord_highlights,
       })
 
       if vim.g.colors_name == "nord" then
-        set_normal_mode_foreground()
+        set_nord_highlights()
       end
     end,
     on_highlights = function(hl, c)
