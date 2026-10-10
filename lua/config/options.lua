@@ -11,6 +11,9 @@ vim.opt.shiftwidth = 4
 -- Set rounded border for default
 vim.o.winborder = "rounded"
 
+-- Dropbar provides the statusline breadcrumbs.
+vim.g.trouble_lualine = false
+
 -- Align the cursor line number to the left and all other numbers to the right.
 function _G.NeovimCustomStatuscolumn()
   local column = LazyVim.statuscolumn()

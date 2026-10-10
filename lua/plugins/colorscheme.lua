@@ -16,6 +16,9 @@ return {
 
         local colors = require("nord.colors")
         local dropbar_highlights = {
+          -- Dropbar's highlight resets inherit StatusLine inside lualine_c.
+          StatusLine = { fg = colors.nord4_gui, bg = colors.nord1_gui },
+          StatusLineNC = { fg = colors.nord4_gui, bg = colors.nord1_gui },
           WinBar = { fg = colors.nord4_gui, bg = colors.none },
           WinBarNC = { fg = colors.nord3_gui_bright, bg = colors.none },
           DropBarIconUIPickPivot = { fg = colors.nord0_gui, bg = colors.nord13_gui, bold = true },

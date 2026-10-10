@@ -33,8 +33,6 @@ return function(lazyPath, treesitterRuntime)
 
       { import = "lazyvim.plugins.extras.coding.mini-surround" },
       { import = "lazyvim.plugins.extras.editor.inc-rename" },
-      { import = "lazyvim.plugins.extras.ui.edgy" },
-      -- { import = "lazyvim.plugins.extras.util.mini-hipatterns" },
 
       { import = "lazyvim.plugins.extras.dap.core" },
       { import = "lazyvim.plugins.extras.lang.clangd" },
