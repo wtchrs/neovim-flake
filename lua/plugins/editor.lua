@@ -47,7 +47,10 @@ return {
             ignored = true,
             icons = { git = { ignored = "" } },
             formatters = { file = { git_status_hl = true } },
-            layout = { auto_hide = { "input" } },
+            layout = {
+              auto_hide = { "input" },
+              cycle = false,
+            },
 
             format = function(item, picker)
               local format = require("snacks.picker.format")
