@@ -1,4 +1,7 @@
 return function(lazyPath, treesitterRuntime)
+  -- lazyvim.json as writable data
+  vim.g.lazyvim_json = vim.fn.stdpath("data") .. "/lazyvim.json"
+
   require("lazy").setup({
     defaults = {
       lazy = false,
