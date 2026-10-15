@@ -1,7 +1,29 @@
+local function navigate(direction, edge, pane_flag, window_command)
+  if not vim.env.TMUX or not vim.env.TMUX_PANE or vim.fn.winnr(direction) ~= vim.fn.winnr() then
+    vim.cmd("wincmd " .. direction)
+    return
+  end
+
+  vim.fn.system({
+    "tmux",
+    "if-shell",
+    "-F",
+    "-t",
+    vim.env.TMUX_PANE,
+    "#{pane_at_" .. edge .. "}",
+    window_command,
+    "select-pane -t " .. vim.env.TMUX_PANE .. " " .. pane_flag,
+  })
+end
+
 return {
   {
     -- TMUX integration
     "christoomey/vim-tmux-navigator",
+    init = function()
+      -- The plugin's defaults would overwrite the custom Lazy key mappings on load.
+      vim.g.tmux_navigator_no_mappings = 1
+    end,
     cmd = {
       "TmuxNavigateLeft",
       "TmuxNavigateDown",
@@ -10,11 +32,21 @@ return {
       "TmuxNavigatePrevious",
     },
     keys = {
-      { "<C-h>", "<cmd><C-U>TmuxNavigateLeft<cr>" },
-      { "<C-j>", "<cmd><C-U>TmuxNavigateDown<cr>" },
-      { "<C-k>", "<cmd><C-U>TmuxNavigateUp<cr>" },
-      { "<C-l>", "<cmd><C-U>TmuxNavigateRight<cr>" },
-      { "<C-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
+      {
+        "<C-h>",
+        function()
+          navigate("h", "left", "-L", "previous-window")
+        end,
+      },
+      { "<C-j>", "<cmd>TmuxNavigateDown<cr>" },
+      { "<C-k>", "<cmd>TmuxNavigateUp<cr>" },
+      {
+        "<C-l>",
+        function()
+          navigate("l", "right", "-R", "next-window")
+        end,
+      },
+      { "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>" },
     },
   },
 

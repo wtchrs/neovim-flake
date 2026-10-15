@@ -96,6 +96,34 @@ After rebuilding, open a Java file in a Maven, Gradle, or Bazel project. Run
 
 If you use tmux, add the [christoomey/vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator) to your tmux config for seamless navigation between Neovim and tmux panes.
 
+To extend horizontal navigation to tmux windows, apply these overrides after the
+plugin loads (in `~/.tmux.conf`, or Home Manager's `programs.tmux.extraConfig`):
+
+```tmux
+is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
+  | grep -iqE '^[^TXZ ]+ +([^[:space:]]+/)?g?[.]?(view|l?n?vim?x?|fzf)(diff)?(-wrapped)?$'"
+
+bind -n C-h if-shell "$is_vim" {
+  send-keys C-h
+} {
+  if-shell -F '#{pane_at_left}' 'previous-window' 'select-pane -L'
+}
+
+bind -n C-l if-shell "$is_vim" {
+  send-keys C-l
+} {
+  if-shell -F '#{pane_at_right}' 'next-window' 'select-pane -R'
+}
+
+bind -T copy-mode-vi C-h if-shell -F '#{pane_at_left}' 'previous-window' 'select-pane -L'
+bind -T copy-mode-vi C-l if-shell -F '#{pane_at_right}' 'next-window' 'select-pane -R'
+```
+
+`Ctrl+h/l` moves through Neovim splits, then tmux panes, then to the previous/next
+tmux window at the left/right edge. The last two bindings provide the same window
+navigation in vi copy mode. `Ctrl+j/k` keeps the plugin's vertical pane navigation.
+Reload your tmux configuration after applying the changes.
+
 ## Dev shell
 
 You can start the Nix development shell with LSPs and formatters for Nix and Lua.
