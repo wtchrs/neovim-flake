@@ -1,6 +1,26 @@
-local function navigate(direction, edge, pane_flag, window_command)
-  if not vim.env.TMUX or not vim.env.TMUX_PANE or vim.fn.winnr(direction) ~= vim.fn.winnr() then
-    vim.cmd("wincmd " .. direction)
+local function navigate(direction, pane_flag, edge, window_command)
+  -- Floating picker windows must navigate relative to their containing split.
+  local window = vim.api.nvim_get_current_win()
+  local config = vim.api.nvim_win_get_config(window)
+  while config.relative == "win" do
+    window = config.win
+    config = vim.api.nvim_win_get_config(window)
+  end
+
+  local neighbor = vim.api.nvim_win_call(window, function()
+    return vim.fn.win_getid(vim.fn.winnr(direction))
+  end)
+  if neighbor ~= window then
+    vim.api.nvim_set_current_win(neighbor)
+    return
+  end
+
+  if not vim.env.TMUX or not vim.env.TMUX_PANE then
+    return
+  end
+
+  if not window_command then
+    vim.fn.system({ "tmux", "select-pane", "-t", vim.env.TMUX_PANE, pane_flag })
     return
   end
 
@@ -35,15 +55,25 @@ return {
       {
         "<C-h>",
         function()
-          navigate("h", "left", "-L", "previous-window")
+          navigate("h", "-L", "left", "previous-window")
         end,
       },
-      { "<C-j>", "<cmd>TmuxNavigateDown<cr>" },
-      { "<C-k>", "<cmd>TmuxNavigateUp<cr>" },
+      {
+        "<C-j>",
+        function()
+          navigate("j", "-D")
+        end,
+      },
+      {
+        "<C-k>",
+        function()
+          navigate("k", "-U")
+        end,
+      },
       {
         "<C-l>",
         function()
-          navigate("l", "right", "-R", "next-window")
+          navigate("l", "-R", "right", "next-window")
         end,
       },
       { "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>" },
@@ -82,6 +112,14 @@ return {
             layout = {
               auto_hide = { "input" },
               cycle = false,
+            },
+            win = {
+              list = {
+                keys = {
+                  ["<c-j>"] = false,
+                  ["<c-k>"] = false,
+                },
+              },
             },
 
             format = function(item, picker)

@@ -48,7 +48,90 @@ vim.schedule(function()
     press("<C-j>")
     press("<C-k>")
     assert(vim.api.nvim_get_current_win() == top_window, "Standalone Neovim must stay at the vertical split edge")
-    print("Navigation: mappings survive plugin loading; hjkl and previous-split key input passed")
+
+    vim.o.columns = 160
+    vim.o.lines = 48
+    local editor_window = vim.api.nvim_get_current_win()
+    local explorer_positions = {
+      { position = "left", edge_key = "<C-h>", editor_key = "<C-l>" },
+      { position = "right", edge_key = "<C-l>", editor_key = "<C-h>" },
+    }
+    for _, case in ipairs(explorer_positions) do
+      local picker = Snacks.picker.explorer({ layout = { layout = { position = case.position } } })
+      assert(
+        vim.wait(3000, function()
+          return picker.list.win:valid()
+        end),
+        "Explorer must open"
+      )
+      picker:focus("list")
+      local explorer_window = vim.api.nvim_get_current_win()
+      press(case.edge_key)
+      assert(vim.api.nvim_get_current_win() == explorer_window, "Explorer must stay at its outer edge without tmux")
+      press(case.editor_key)
+      assert(vim.api.nvim_get_current_win() == editor_window, "Explorer must navigate inward to the editor")
+      press(case.edge_key)
+      assert(vim.api.nvim_get_current_win() == explorer_window, "Editor must navigate back into the explorer")
+      picker:close()
+    end
+
+    local explorer_cwd = vim.fn.tempname()
+    vim.fn.mkdir(explorer_cwd, "p")
+    for _, name in ipairs({ "first", "second", "third" }) do
+      vim.fn.writefile({}, explorer_cwd .. "/" .. name)
+    end
+    local vertical_neighbors = {
+      { split = "botright split", key = "<C-j>" },
+      { split = "topleft split", key = "<C-k>" },
+    }
+    for _, case in ipairs(vertical_neighbors) do
+      -- Background status refreshes can reset the selected row during key input.
+      local picker = Snacks.picker.explorer({
+        cwd = explorer_cwd,
+        follow_file = false,
+        watch = false,
+        diagnostics = false,
+        git_status = false,
+      })
+      assert(
+        vim.wait(3000, function()
+          return picker.list.win:valid() and picker.list:count() >= 3
+        end),
+        "Explorer must open"
+      )
+      vim.api.nvim_set_current_win(editor_window)
+      vim.cmd(case.split)
+      local neighbor_window = vim.api.nvim_get_current_win()
+      picker:focus("list")
+      press(case.key)
+      assert(vim.api.nvim_get_current_win() == neighbor_window, "Explorer list must navigate to the vertical split")
+      for _, mode_prefix in ipairs({ "", "i" }) do
+        picker:focus("input", { show = true })
+        assert(
+          vim.wait(1000, function()
+            return picker.input.win:valid()
+              and vim.api.nvim_get_current_win() == picker.input.win.win
+              and picker.list:count() >= 3
+              and not picker:is_active()
+          end),
+          "Search input must receive focus"
+        )
+        vim.cmd.stopinsert()
+        local input_window = vim.api.nvim_get_current_win()
+        picker.list:move(2, true)
+        press(mode_prefix .. "<C-j>")
+        assert(picker.list.cursor == 3, "Search input Ctrl+j must move down the list")
+        assert(vim.api.nvim_get_current_win() == input_window, "Search input Ctrl+j must preserve input focus")
+        press(mode_prefix .. "<C-k>")
+        assert(picker.list.cursor == 2, "Search input Ctrl+k must move up the list")
+        assert(vim.api.nvim_get_current_win() == input_window, "Search input Ctrl+k must preserve input focus")
+      end
+      picker:close()
+      vim.api.nvim_set_current_win(editor_window)
+      vim.cmd("only")
+    end
+    vim.fn.delete(explorer_cwd, "rf")
+    print("Navigation: explorer list focus movement and search input list movement passed")
   end, debug.traceback)
 
   if not ok then
