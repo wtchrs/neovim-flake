@@ -65,7 +65,6 @@ with pkgs.vimPlugins;
   ts-comments-nvim
   venv-selector-nvim
   vim-startuptime
-  vim-tmux-navigator
   which-key-nvim
 
   {

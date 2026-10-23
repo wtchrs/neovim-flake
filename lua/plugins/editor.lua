@@ -1,85 +1,4 @@
-local function navigate(direction, pane_flag, edge, window_command)
-  -- Floating picker windows must navigate relative to their containing split.
-  local window = vim.api.nvim_get_current_win()
-  local config = vim.api.nvim_win_get_config(window)
-  while config.relative == "win" do
-    window = config.win
-    config = vim.api.nvim_win_get_config(window)
-  end
-
-  local neighbor = vim.api.nvim_win_call(window, function()
-    return vim.fn.win_getid(vim.fn.winnr(direction))
-  end)
-  if neighbor ~= window then
-    vim.api.nvim_set_current_win(neighbor)
-    return
-  end
-
-  if not vim.env.TMUX or not vim.env.TMUX_PANE then
-    return
-  end
-
-  if not window_command then
-    vim.fn.system({ "tmux", "select-pane", "-t", vim.env.TMUX_PANE, pane_flag })
-    return
-  end
-
-  vim.fn.system({
-    "tmux",
-    "if-shell",
-    "-F",
-    "-t",
-    vim.env.TMUX_PANE,
-    "#{pane_at_" .. edge .. "}",
-    window_command,
-    "select-pane -t " .. vim.env.TMUX_PANE .. " " .. pane_flag,
-  })
-end
-
 return {
-  {
-    -- TMUX integration
-    "christoomey/vim-tmux-navigator",
-    init = function()
-      -- The plugin's defaults would overwrite the custom Lazy key mappings on load.
-      vim.g.tmux_navigator_no_mappings = 1
-    end,
-    cmd = {
-      "TmuxNavigateLeft",
-      "TmuxNavigateDown",
-      "TmuxNavigateUp",
-      "TmuxNavigateRight",
-      "TmuxNavigatePrevious",
-    },
-    keys = {
-      {
-        "<C-h>",
-        function()
-          navigate("h", "-L", "left", "previous-window")
-        end,
-      },
-      {
-        "<C-j>",
-        function()
-          navigate("j", "-D")
-        end,
-      },
-      {
-        "<C-k>",
-        function()
-          navigate("k", "-U")
-        end,
-      },
-      {
-        "<C-l>",
-        function()
-          navigate("l", "-R", "right", "next-window")
-        end,
-      },
-      { "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>" },
-    },
-  },
-
   {
     -- IME integration
     "keaising/im-select.nvim",
@@ -113,15 +32,6 @@ return {
               auto_hide = { "input" },
               cycle = false,
             },
-            win = {
-              list = {
-                keys = {
-                  ["<c-j>"] = false,
-                  ["<c-k>"] = false,
-                },
-              },
-            },
-
             format = function(item, picker)
               local format = require("snacks.picker.format")
               local ret = format.file(item, picker)

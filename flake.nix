@@ -50,19 +50,6 @@
           pkgs = pkgsFor system;
         in
         {
-          navigation = pkgs.runCommand "neovim-navigation-check" { } ''
-            export HOME="$TMPDIR/home"
-            export XDG_DATA_HOME="$TMPDIR/data"
-            export XDG_CACHE_HOME="$TMPDIR/cache"
-            export XDG_STATE_HOME="$TMPDIR/state"
-            export NVIM_LOG_FILE="$TMPDIR/nvim.log"
-            mkdir -p "$HOME"
-
-            timeout 30s ${self.packages.${system}.default}/bin/nvim --headless -i NONE \
-              '+lua dofile("${./tests/navigation.lua}")'
-            touch "$out"
-          '';
-
           java = pkgs.runCommand "neovim-java-check" { } ''
             export HOME="$TMPDIR/home"
             export XDG_DATA_HOME="$TMPDIR/data"
