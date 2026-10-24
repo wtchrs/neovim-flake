@@ -63,6 +63,7 @@ with pkgs.vimPlugins;
   todo-comments-nvim
   trouble-nvim
   ts-comments-nvim
+  typst-preview-nvim
   venv-selector-nvim
   vim-startuptime
   which-key-nvim

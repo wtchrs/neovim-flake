@@ -47,6 +47,7 @@ return function(lazyPath, treesitterRuntime)
       { import = "lazyvim.plugins.extras.lang.rust" },
       { import = "lazyvim.plugins.extras.lang.tailwind" },
       { import = "lazyvim.plugins.extras.lang.typescript" },
+      { import = "lazyvim.plugins.extras.lang.typst" },
       { import = "lazyvim.plugins.extras.lang.yaml" },
 
       { import = "plugins" },
