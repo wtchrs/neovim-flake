@@ -3,3 +3,6 @@
 
 # Nix build result
 result
+
+# Neovim log
+nvim.log
