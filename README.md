@@ -62,12 +62,22 @@ the flake input and rebuilding the package, rather than running `:TSUpdate` or
 
 Run `nix flake check` to verify:
 
+- CodeDiff watcher discovery from the bundled PATH, native process startup, and
+  worktree change notifications with empty Neovim data directories.
 - Treesitter parser availability and automatic Lua/Nix highlighting with empty
   Neovim data directories.
 - LintInfo command evaluation and preservation of global, tab-local, and
   window-local working directories, including when command evaluation fails.
 - Java LSP selection, blink.cmp capabilities, IntelliJ DAP registration,
   multi-module root selection, and native server startup on Linux.
+
+## CodeDiff watcher
+
+Nix downloads `codediff-watcher` from a pinned GitHub Release for x86_64 and ARM64
+Linux and adds it to Neovim's PATH. CodeDiff uses this binary without installing
+it into the plugin's read-only Nix store directory. Keep the version in
+`nix/codediff-watcher.nix` aligned with the plugin's watcher installer when updating
+nixpkgs.
 
 ## Java: IntelliJ language server
 

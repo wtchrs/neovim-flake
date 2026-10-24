@@ -3,6 +3,7 @@
 let
   appName = "nvim-store";
   intellijServer = import ./intellij-server.nix { inherit pkgs lib; };
+  codediffWatcher = import ./codediff-watcher.nix { inherit pkgs lib; };
 
   plugins = import ./plugins.nix { inherit pkgs lib; };
 
@@ -48,6 +49,7 @@ let
     tree-sitter
     xxd
     intellijServer
+    codediffWatcher
   ];
 in
 pkgs.symlinkJoin {

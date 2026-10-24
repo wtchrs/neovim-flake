@@ -21,6 +21,7 @@ with pkgs.vimPlugins;
   blink-cmp
   clangd_extensions-nvim
   cmake-tools-nvim
+  codediff-nvim
   colorful-menu-nvim
   conform-nvim
   crates-nvim
