@@ -1,15 +1,15 @@
 { pkgs, lib }:
 
 let
-  version = "263.6379.0";
+  version = "263.7084.0";
   bundles = {
     x86_64-linux = {
       suffix = "";
-      hash = "sha256-dSnMcz1KAg4cE2kYOy9g4TXIW48HS78n0UdqWns4OcM=";
+      hash = "sha256-OELy9FfinljNnDepdIKyglXVmKL/FCB1dT2UcgbAuSI=";
     };
     aarch64-linux = {
       suffix = "-aarch64";
-      hash = "sha256-e1CvotbwjL2dw5zNm/icA7s3/yVuJSQ/winPjsEDVOo=";
+      hash = "sha256-1d8JgKzE7rNbHnYifKpiY5/NoYhkkGTRe1sN4Qd7OMA=";
     };
   };
   bundle = bundles.${pkgs.stdenv.hostPlatform.system};
