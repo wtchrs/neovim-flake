@@ -75,9 +75,8 @@ Run `nix flake check` to verify:
 
 Nix downloads `codediff-watcher` from a pinned GitHub Release for x86_64 and ARM64
 Linux and adds it to Neovim's PATH. CodeDiff uses this binary without installing
-it into the plugin's read-only Nix store directory. Keep the version in
-`nix/codediff-watcher.nix` aligned with the plugin's watcher installer when updating
-nixpkgs.
+it into the plugin's read-only Nix store directory. See
+[Updating bundled binaries](#updating-bundled-binaries) for update instructions.
 
 ## Java: IntelliJ language server
 
@@ -98,9 +97,28 @@ After rebuilding, open a Java file in a Maven, Gradle, or Bazel project. Run
   `:IntellijDebug`, or nvim-dap.
 - The first import may take several minutes. Diagnose failures with
   `:IntellijStatus` and `:IntellijLog`. Use one Neovim instance per project root.
-- Update the server pin in `nix/intellij-server.nix` and the client pin in
-  `nix/plugins.nix`, then rebuild. Avoid `:IntellijInstall` and `:IntellijUpdate`
-  on NixOS.
+
+See [Updating bundled binaries](#updating-bundled-binaries) for update instructions.
+
+## Updating bundled binaries
+
+- CodeDiff (`nix/codediff-watcher.nix`): match `VERSION` in the locked nixpkgs
+  plugin's `lua/codediff/core/installer/watcher.lua`; archives are on
+  [GitHub Releases](https://github.com/esmuellert/codediff/releases).
+- IntelliJ (`nix/intellij-server.nix`): run `nix run .#check-intellij-server`
+  to print both platforms' server versions, archive URLs, and SHA-256 checksums
+  from the latest Open VSX extension.
+  Check client compatibility in `nix/plugins.nix`.
+  Avoid `:IntellijInstall` and `:IntellijUpdate` on NixOS.
+
+Change the package's `version`, set `hash = lib.fakeHash;`, and run
+`nix build .#default --no-link` from the repository root. Replace the fake hash
+with the quoted `got: sha256-...` value from the hash mismatch error.
+
+Update both `x86_64-linux` and `aarch64-linux` hashes. A local build fetches only
+the current platform; for the other archive, use the `hash` returned by
+`nix store prefetch-file --json --hash-type sha256 '<archive-url>'`
+without `--unpack`.
 
 ## Dev shell
 

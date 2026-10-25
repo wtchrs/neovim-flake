@@ -33,9 +33,24 @@
         };
     in
     {
-      packages = forAllSystems (system: {
-        default = mkNvim system;
-      });
+      packages = forAllSystems (
+        system:
+        let
+          pkgs = pkgsFor system;
+        in
+        {
+          default = mkNvim system;
+          check-intellij-server = pkgs.writeShellApplication {
+            name = "check-intellij-server";
+            runtimeInputs = with pkgs; [
+              curl
+              libarchive
+              jq
+            ];
+            text = builtins.readFile ./scripts/check-intellij-server.sh;
+          };
+        }
+      );
 
       apps = forAllSystems (system: {
         default = {
