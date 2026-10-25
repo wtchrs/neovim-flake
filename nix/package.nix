@@ -3,7 +3,6 @@
 let
   appName = "nvim-store";
   intellijServer = import ./intellij-server.nix { inherit pkgs lib; };
-  codediffWatcher = import ./codediff-watcher.nix { inherit pkgs lib; };
 
   plugins = import ./plugins.nix { inherit pkgs lib; };
 
@@ -49,7 +48,6 @@ let
     tree-sitter
     xxd
     intellijServer
-    codediffWatcher
   ];
 in
 pkgs.symlinkJoin {
@@ -63,6 +61,7 @@ pkgs.symlinkJoin {
     makeWrapper ${pkgs.neovim-unwrapped}/bin/nvim "$out/bin/nvim" \
       --set NVIM_APPNAME ${appName} \
       --set XDG_CONFIG_HOME ${configRoot} \
+      --set CODEDIFF_WATCHER_NO_AUTO_INSTALL 1 \
       --set-default INTELLIJ_SERVER_DIR ${intellijServer}/share/intellij-server \
       --prefix PATH : ${lib.makeBinPath runtimeDeps}
   '';

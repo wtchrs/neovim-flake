@@ -62,8 +62,8 @@ the flake input and rebuilding the package, rather than running `:TSUpdate` or
 
 Run `nix flake check` to verify:
 
-- CodeDiff watcher discovery from the bundled PATH, native process startup, and
-  worktree change notifications with empty Neovim data directories.
+- CodeDiff watcher auto-installation disabled and polling refresh with empty
+  Neovim data directories.
 - Treesitter parser availability and automatic Lua/Nix highlighting with empty
   Neovim data directories.
 - LintInfo command evaluation and preservation of global, tab-local, and
@@ -73,10 +73,8 @@ Run `nix flake check` to verify:
 
 ## CodeDiff watcher
 
-Nix downloads `codediff-watcher` from a pinned GitHub Release for x86_64 and ARM64
-Linux and adds it to Neovim's PATH. CodeDiff uses this binary without installing
-it into the plugin's read-only Nix store directory. See
-[Updating bundled binaries](#updating-bundled-binaries) for update instructions.
+The wrapper disables watcher downloads with `CODEDIFF_WATCHER_NO_AUTO_INSTALL=1`.
+Without a watcher, CodeDiff automatically refreshes by polling every 500 ms.
 
 ## Java: IntelliJ language server
 
@@ -102,9 +100,6 @@ See [Updating bundled binaries](#updating-bundled-binaries) for update instructi
 
 ## Updating bundled binaries
 
-- CodeDiff (`nix/codediff-watcher.nix`): match `VERSION` in the locked nixpkgs
-  plugin's `lua/codediff/core/installer/watcher.lua`; archives are on
-  [GitHub Releases](https://github.com/esmuellert/codediff/releases).
 - IntelliJ (`nix/intellij-server.nix`): run `nix run .#check-intellij-server`
   to print both platforms' server versions, archive URLs, and SHA-256 checksums
   from the latest Open VSX extension.
