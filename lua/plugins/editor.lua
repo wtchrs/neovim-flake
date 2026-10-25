@@ -78,5 +78,29 @@ return {
     end,
   },
 
+  {
+    "OXY2DEV/markview.nvim",
+    -- Markview handles deferred rendering internally.
+    lazy = false,
+    dependencies = { "nvim-mini/mini.icons" },
+
+    opts = {
+      preview = {
+        enable = false,
+        map_gx = false,
+        icon_provider = "mini",
+        filetypes = { "markdown", "typst" },
+
+        modes = { "n", "no", "c" },
+      },
+    },
+
+    keys = {
+      { "<leader>mp", "<cmd>Markview toggle<cr>", ft = "markdown", desc = "Toggle Markdown Preview" },
+      { "<leader>ms", "<cmd>Markview splitToggle<cr>", ft = "markdown", desc = "Toggle Markdown Split Preview" },
+      { "<leader>mh", "<cmd>Markview hybridToggle<cr>", ft = "markdown", desc = "Toggle Markdown Hybrid Mode" },
+    },
+  },
+
   { "dstein64/vim-startuptime" },
 }
