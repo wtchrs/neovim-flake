@@ -4,6 +4,12 @@ let
   appName = "nvim-store";
   intellijServer = import ./intellij-server.nix { inherit pkgs lib; };
 
+  # LazyVim uses Mason's executable name for the JavaScript debug adapter.
+  jsDebugAdapter = pkgs.runCommand "js-debug-adapter" { } ''
+    mkdir -p "$out/bin"
+    ln -s ${lib.getExe pkgs.vscode-js-debug} "$out/bin/js-debug-adapter"
+  '';
+
   plugins = import ./plugins.nix { inherit pkgs lib; };
 
   mkLazyEntry =
@@ -39,15 +45,66 @@ let
     EOF
   '';
 
-  runtimeDeps = with pkgs; [
-    git
+  internalTools = with pkgs; [
     ripgrep
     fd
-    gcc
-    gnumake
     tree-sitter
     xxd
+  ];
+
+  # Project tools keep precedence; these also support editing outside a dev shell.
+  developmentTools = with pkgs; [
+    git
+    gcc
+    gnumake
+    cmake
+    ninja
+    go
+    rustc
+    cargo
+    clippy
+    rustfmt
+    python3
+    nodejs
+    jdk
+    tsx
+
+    # Language servers for the enabled LazyVim extras and local configuration.
+    awk-language-server
+    clang-tools
+    neocmakelsp
+    dockerfile-language-server
+    docker-compose-language-service
+    gopls
+    nil
+    lua-language-server
+    pyright
+    ruff
+    rust-analyzer
+    tailwindcss-language-server
+    vtsls
+    tinymist
+    yaml-language-server
     intellijServer
+
+    # Formatters and linters, including LazyVim's default shell support.
+    stylua
+    nixfmt
+    shfmt
+    fish
+    gotools
+    gofumpt
+    typstyle
+    statix
+    golangci-lint
+    hadolint
+    cmake-lint
+
+    # Debug adapters already configured by the enabled extras.
+    delve
+    python3Packages.debugpy
+    vscode-extensions.vadimcn.vscode-lldb.adapter
+    jsDebugAdapter
   ];
 in
 pkgs.symlinkJoin {
@@ -62,7 +119,7 @@ pkgs.symlinkJoin {
       --set NVIM_APPNAME ${appName} \
       --set XDG_CONFIG_HOME ${configRoot} \
       --set CODEDIFF_WATCHER_NO_AUTO_INSTALL 1 \
-      --set-default INTELLIJ_SERVER_DIR ${intellijServer}/share/intellij-server \
-      --prefix PATH : ${lib.makeBinPath runtimeDeps}
+      --prefix PATH : ${lib.makeBinPath internalTools} \
+      --suffix PATH : ${lib.makeBinPath developmentTools}
   '';
 }

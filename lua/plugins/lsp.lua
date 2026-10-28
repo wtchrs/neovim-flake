@@ -16,6 +16,32 @@ return {
       codelens = false,
       data_sharing = "none",
     },
+    config = function(_, opts)
+      -- Pin PATH selection ahead of the client's own downloaded-server cache.
+      local server_dir = vim.env.INTELLIJ_SERVER_DIR
+      if opts.server_dir == nil and (server_dir == nil or server_dir == "") then
+        local server = vim.fn.exepath("intellij-server")
+        if server ~= "" then
+          -- The client locates EULA.txt relative to the real launcher.
+          opts.server_dir = vim.fn.resolve(server)
+        end
+      end
+
+      -- The project JDK is separate from the server's bundled JBR.
+      if opts.jdk == nil then
+        local java_home = vim.env.JAVA_HOME
+        if java_home and java_home ~= "" then
+          opts.jdk = java_home
+        else
+          local javac = vim.fn.exepath("javac")
+          if javac ~= "" then
+            opts.jdk = vim.fs.dirname(vim.fs.dirname(vim.fn.resolve(javac)))
+          end
+        end
+      end
+
+      require("intellij-lsp").setup(opts)
+    end,
   },
 
   {

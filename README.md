@@ -51,6 +51,17 @@ If you want to use this flake in your NixOS configuration, use the following set
 }
 ```
 
+## Development tools
+
+Language servers, formatters, linters, debug adapters, and basic toolchains for
+the enabled languages are bundled. Tools in the launching shell's `PATH` take
+precedence. Internal utilities (`rg`, `fd`, `xxd`, and the Tree-sitter CLI) use
+bundled versions first, including in Neovim terminals.
+
+Use a project's development shell or direnv for its dependencies and tool
+versions before launching Neovim. Inspect formatter and linter paths with
+`:ConformInfo` and `:LintInfo`.
+
 ## Treesitter parsers
 
 Treesitter parsers and queries are bundled by Nix and loaded from the Nix store.
@@ -69,16 +80,8 @@ In Markdown buffers:
 
 ## Checks
 
-Run `nix flake check` to verify:
-
-- CodeDiff watcher auto-installation disabled and polling refresh with empty
-  Neovim data directories.
-- Treesitter parser availability and automatic Lua/Nix highlighting with empty
-  Neovim data directories.
-- LintInfo command evaluation and preservation of global, tab-local, and
-  window-local working directories, including when command evaluation fails.
-- Java LSP selection, blink.cmp capabilities, IntelliJ DAP registration,
-  multi-module root selection, and native server startup on Linux.
+Run `nix flake check` to verify tool selection, Treesitter, LintInfo, and Java
+integration.
 
 ## CodeDiff watcher
 
@@ -98,8 +101,9 @@ After rebuilding, open a Java file in a Maven, Gradle, or Bazel project. Run
 :checkhealth intellij-lsp
 ```
 
-- Provide a project JDK through your environment. Set `JAVA_HOME` before launching
-  Neovim to select it explicitly; otherwise the client searches known JDK locations.
+- Set `INTELLIJ_SERVER_DIR` to select an external server explicitly.
+- Set `JAVA_HOME` to select a project JDK; otherwise the first `javac` in `PATH`
+  determines the JDK.
 - Organize imports with `<leader>co`; run or debug with `:IntellijRun`,
   `:IntellijDebug`, or nvim-dap.
 - The first import may take several minutes. Diagnose failures with

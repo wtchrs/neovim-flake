@@ -63,17 +63,33 @@
         system:
         let
           pkgs = pkgsFor system;
+          externalTools = pkgs.runCommand "neovim-external-tools" { } ''
+            mkdir -p "$out/bin"
+            for tool in git gcc make cmake nil stylua statix pyright-langserver \
+              dlv codelldb js-debug-adapter intellij-server javac rg fd xxd tree-sitter; do
+              cp ${pkgs.coreutils}/bin/true "$out/bin/$tool"
+            done
+          '';
         in
         {
-          codediff = pkgs.runCommand "neovim-codediff-check" { } ''
-            export HOME="$TMPDIR/home"
-            export XDG_DATA_HOME="$TMPDIR/data"
-            export XDG_CACHE_HOME="$TMPDIR/cache"
-            export XDG_STATE_HOME="$TMPDIR/state"
-            mkdir -p "$HOME"
+          tools = pkgs.runCommand "neovim-tools-check" { } ''
+            for mode in bundled external; do
+              export HOME="$TMPDIR/$mode/home"
+              export XDG_DATA_HOME="$TMPDIR/$mode/data"
+              export XDG_CACHE_HOME="$TMPDIR/$mode/cache"
+              export XDG_STATE_HOME="$TMPDIR/$mode/state"
+              export PATH="${pkgs.coreutils}/bin"
+              unset INTELLIJ_SERVER_DIR JAVA_HOME TOOLS_EXTERNAL_BIN
+              mkdir -p "$HOME"
 
-            timeout 30s ${self.packages.${system}.default}/bin/nvim --headless -i NONE \
-              '+lua dofile("${./tests/codediff.lua}")'
+              if [ "$mode" = external ]; then
+                export TOOLS_EXTERNAL_BIN="${externalTools}/bin"
+                export PATH="$TOOLS_EXTERNAL_BIN:$PATH"
+              fi
+
+              timeout 90s ${self.packages.${system}.default}/bin/nvim --headless -i NONE \
+                '+lua dofile("${./tests/tools.lua}")'
+            done
             touch "$out"
           '';
 
