@@ -48,6 +48,17 @@ return {
     "neovim/nvim-lspconfig",
     dependencies = { "gipo355/nvim-intellij-lsp" },
 
+    init = function()
+      -- Resolve the Astro extra's package lookup before it can schedule a Mason warning.
+      local get_pkg_path = LazyVim.get_pkg_path
+      LazyVim.get_pkg_path = function(package_name, path, opts)
+        if package_name == "astro-language-server" and path == "/node_modules/@astrojs/ts-plugin" then
+          return vim.g.astro_ts_plugin
+        end
+        return get_pkg_path(package_name, path, opts)
+      end
+    end,
+
     opts = function(_, opts)
       opts.servers = opts.servers or {}
       opts.servers.jdtls = { enabled = false }
@@ -56,6 +67,20 @@ return {
           { "<leader>co", "<cmd>IntellijOrganizeImports<cr>", desc = "Organize Imports" },
         },
       }
+
+      opts.servers.astro.before_init = function(_, config)
+        local typescript = config.init_options.typescript
+        if typescript.tsdk and typescript.tsdk ~= "" then
+          return
+        end
+
+        local tsdk = require("lspconfig.util").get_typescript_server_path(config.root_dir)
+        if tsdk == "" then
+          -- Use the server's bundled SDK when the project has no TypeScript install.
+          tsdk = vim.g.astro_tsdk
+        end
+        typescript.tsdk = tsdk
+      end
 
       -- tiny-code-action.nvim keymap config
       opts.servers["*"] = opts.servers["*"] or {}

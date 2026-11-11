@@ -36,7 +36,6 @@ with pkgs.vimPlugins;
   inc-rename-nvim
   lazydev-nvim
   lualine-nvim
-  markview-nvim
   noice-nvim
   nord-nvim
   nui-nvim

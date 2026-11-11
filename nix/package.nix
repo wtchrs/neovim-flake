@@ -40,6 +40,8 @@ let
 
     cat >"$out/${appName}/init.lua" <<EOF
     vim.opt.rtp:prepend("${pkgs.vimPlugins.lazy-nvim}")
+    vim.g.astro_ts_plugin = "${pkgs.astro-language-server}/lib/node_modules/astro-language-server/packages/language-tools/ts-plugin"
+    vim.g.astro_tsdk = "${pkgs.astro-language-server}/lib/node_modules/astro-language-server/packages/language-tools/language-server/node_modules/typescript/lib"
     local initLazy = require("config.lazy")
     initLazy("${lazyPath}", "${treesitterRuntime}")
     EOF
@@ -70,6 +72,7 @@ let
     tsx
 
     # Language servers for the enabled LazyVim extras and local configuration.
+    astro-language-server
     awk-language-server
     clang-tools
     neocmakelsp
@@ -83,6 +86,7 @@ let
     rust-analyzer
     tailwindcss-language-server
     vtsls
+    vscode-langservers-extracted
     tinymist
     yaml-language-server
     intellijServer

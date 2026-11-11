@@ -69,19 +69,10 @@ Neovim does not download or compile parsers at startup. Update them by updating
 the flake input and rebuilding the package, rather than running `:TSUpdate` or
 `:TSInstall`.
 
-## Markdown preview
-
-[markview.nvim](https://github.com/OXY2DEV/markview.nvim) provides Markdown previews.
-In Markdown buffers:
-
-- `<leader>mp`: toggle the current buffer's preview.
-- `<leader>ms`: toggle split preview.
-- `<leader>mh`: toggle hybrid mode to edit the element under the cursor.
-
 ## Checks
 
-Run `nix flake check` to verify tool selection, Treesitter, LintInfo, and Java
-integration.
+Run `nix flake check` to verify tool selection, Treesitter, LintInfo, Astro, and
+Java integration.
 
 ## CodeDiff watcher
 

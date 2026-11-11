@@ -9,7 +9,19 @@ vim.schedule(function()
     require("lazy").load({ plugins = { "nvim-treesitter" } })
 
     local installed = require("nvim-treesitter").get_installed("parsers")
-    for _, lang in ipairs({ "lua", "nix", "python", "rust", "go", "typescript", "tsx", "markdown" }) do
+    for _, lang in ipairs({
+      "lua",
+      "nix",
+      "python",
+      "rust",
+      "go",
+      "typescript",
+      "tsx",
+      "astro",
+      "json",
+      "json5",
+      "markdown",
+    }) do
       assert(vim.tbl_contains(installed, lang), lang .. " parser is missing")
       assert(LazyVim.treesitter.have(lang), "LazyVim does not recognize " .. lang)
     end

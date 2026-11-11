@@ -38,10 +38,12 @@ return function(lazyPath, treesitterRuntime)
       { import = "lazyvim.plugins.extras.editor.inc-rename" },
 
       { import = "lazyvim.plugins.extras.dap.core" },
+      { import = "lazyvim.plugins.extras.lang.astro" },
       { import = "lazyvim.plugins.extras.lang.clangd" },
       { import = "lazyvim.plugins.extras.lang.cmake" },
       { import = "lazyvim.plugins.extras.lang.docker" },
       { import = "lazyvim.plugins.extras.lang.go" },
+      { import = "lazyvim.plugins.extras.lang.json" },
       { import = "lazyvim.plugins.extras.lang.nix" },
       { import = "lazyvim.plugins.extras.lang.python" },
       { import = "lazyvim.plugins.extras.lang.rust" },
