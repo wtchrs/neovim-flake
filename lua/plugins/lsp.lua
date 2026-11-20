@@ -3,50 +3,65 @@ return {
   { "mason-org/mason.nvim", enabled = false },
   { "mason-org/mason-lspconfig.nvim", enabled = false },
   { "jay-babu/mason-nvim-dap.nvim", enabled = false },
-  { "mfussenegger/nvim-jdtls", enabled = false },
 
+  -- The Java extra only wires Lombok and the debug/test bundles from Mason, so supply the Nix paths.
   {
-    "gipo355/nvim-intellij-lsp",
-    lazy = true,
-    dependencies = { "mfussenegger/nvim-dap" },
-    opts = {
-      kotlin = false,
-      -- LazyVim owns hint visibility and code lens refresh.
-      inlay_hints = "manual",
-      codelens = false,
-      data_sharing = "none",
-    },
-    config = function(_, opts)
-      -- Pin PATH selection ahead of the client's own downloaded-server cache.
-      local server_dir = vim.env.INTELLIJ_SERVER_DIR
-      if opts.server_dir == nil and (server_dir == nil or server_dir == "") then
-        local server = vim.fn.exepath("intellij-server")
-        if server ~= "" then
-          -- The client locates EULA.txt relative to the real launcher.
-          opts.server_dir = vim.fn.resolve(server)
+    "mfussenegger/nvim-jdtls",
+    opts = function(_, opts)
+      table.insert(opts.cmd, "--jvm-arg=-javaagent:" .. vim.g.jdtls_lombok_jar)
+
+      local bundles = vim.fn.glob(vim.g.java_debug_dir .. "/com.microsoft.java.debug.plugin-*.jar", false, true)
+      for _, jar in ipairs(vim.fn.glob(vim.g.java_test_dir .. "/*.jar", false, true)) do
+        local name = vim.fs.basename(jar)
+        -- nvim-jdtls documents these two jars as breaking the bundle list.
+        local excluded = name == "com.microsoft.java.test.runner-jar-with-dependencies.jar" or name == "jacocoagent.jar"
+        if not excluded then
+          table.insert(bundles, jar)
         end
       end
+      opts.jdtls = { init_options = { bundles = bundles } }
 
-      -- The project JDK is separate from the server's bundled JBR.
-      if opts.jdk == nil then
-        local java_home = vim.env.JAVA_HOME
-        if java_home and java_home ~= "" then
-          opts.jdk = java_home
-        else
-          local javac = vim.fn.exepath("javac")
-          if javac ~= "" then
-            opts.jdk = vim.fs.dirname(vim.fs.dirname(vim.fn.resolve(javac)))
-          end
+      -- Mirror the extra's Mason-gated debug and test setup.
+      opts.on_attach = function(args)
+        require("jdtls").setup_dap(opts.dap)
+        if opts.dap_main then
+          require("jdtls.dap").setup_dap_main_class_configs(opts.dap_main)
         end
-      end
 
-      require("intellij-lsp").setup(opts)
+        local jdtls_dap = require("jdtls.dap")
+        local test_opts = {}
+        if type(opts.test) == "table" then
+          test_opts.config_overrides = opts.test.config_overrides
+        end
+        require("which-key").add({
+          {
+            mode = "n",
+            buffer = args.buf,
+            { "<leader>t", group = "test" },
+            {
+              "<leader>tt",
+              function()
+                jdtls_dap.test_class(test_opts)
+              end,
+              desc = "Run All Test",
+            },
+            {
+              "<leader>tr",
+              function()
+                jdtls_dap.test_nearest_method(test_opts)
+              end,
+              desc = "Run Nearest Test",
+            },
+            { "<leader>tT", jdtls_dap.pick_test, desc = "Run Test" },
+          },
+        })
+      end
     end,
   },
 
   {
     "neovim/nvim-lspconfig",
-    dependencies = { "gipo355/nvim-intellij-lsp" },
+    dependencies = {},
 
     init = function()
       -- Resolve the Astro extra's package lookup before it can schedule a Mason warning.
@@ -61,13 +76,6 @@ return {
 
     opts = function(_, opts)
       opts.servers = opts.servers or {}
-      opts.servers.jdtls = { enabled = false }
-      opts.servers.intellij = {
-        keys = {
-          { "<leader>co", "<cmd>IntellijOrganizeImports<cr>", desc = "Organize Imports" },
-        },
-      }
-
       opts.servers.astro.before_init = function(_, config)
         local typescript = config.init_options.typescript
         if typescript.tsdk and typescript.tsdk ~= "" then

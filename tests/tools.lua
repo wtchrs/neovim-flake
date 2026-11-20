@@ -35,7 +35,7 @@ vim.schedule(function()
       "vscode-json-language-server",
       "tinymist",
       "yaml-language-server",
-      "intellij-server",
+      "jdtls",
       "stylua",
       "nixfmt",
       "shfmt",
@@ -69,7 +69,7 @@ vim.schedule(function()
       "dlv",
       "codelldb",
       "js-debug-adapter",
-      "intellij-server",
+      "jdtls",
       "javac",
     }
     for _, command in ipairs(overridden) do
@@ -116,50 +116,6 @@ vim.schedule(function()
       LazyVim.get_pkg_path("astro-language-server", "/node_modules/@astrojs/ts-plugin") == astro_plugin.location,
       "Astro package lookup still uses Mason"
     )
-
-    local intellij_plugin = plugins["nvim-intellij-lsp"]
-    local intellij = require("intellij-lsp")
-    local server = require("intellij-lsp.server")
-    local original_opts = vim.deepcopy(intellij.options())
-    local cached_server = require("intellij-lsp.install").install_dir("999.0.0")
-    vim.fn.mkdir(cached_server .. "/bin", "p")
-    vim.fn.writefile({ "#!/bin/sh", "exit 0" }, cached_server .. "/bin/intellij-server")
-    assert(vim.fn.setfperm(cached_server .. "/bin/intellij-server", "rwxr-xr-x") == 1)
-    assert(server.find() == vim.fn.resolve(vim.fn.exepath("intellij-server")), "IntelliJ did not follow PATH selection")
-    local javac_home = vim.fs.dirname(vim.fs.dirname(vim.fn.resolve(vim.fn.exepath("javac"))))
-    assert(original_opts.jdk == javac_home, "IntelliJ did not select the PATH JDK")
-    assert(vim.env.INTELLIJ_SERVER_DIR == nil, "Wrapper set INTELLIJ_SERVER_DIR")
-    assert(vim.env.JAVA_HOME == nil, "Wrapper set JAVA_HOME")
-
-    local fixture = vim.fn.tempname()
-    for _, name in ipairs({ "env", "explicit", "project-jdk" }) do
-      vim.fn.mkdir(fixture .. "/" .. name .. "/bin", "p")
-      for _, command in ipairs({ "intellij-server", "javac" }) do
-        local executable = fixture .. "/" .. name .. "/bin/" .. command
-        vim.fn.writefile({ "#!/bin/sh", "exit 0" }, executable)
-        assert(vim.fn.setfperm(executable, "rwxr-xr-x") == 1)
-      end
-    end
-    vim.env.INTELLIJ_SERVER_DIR = fixture .. "/env"
-    vim.env.JAVA_HOME = fixture .. "/project-jdk"
-    local env_opts = vim.deepcopy(original_opts)
-    env_opts.server_dir = nil
-    env_opts.jdk = nil
-    intellij_plugin.config(intellij_plugin, env_opts)
-    assert(server.find() == fixture .. "/env/bin/intellij-server", "IntelliJ ignored INTELLIJ_SERVER_DIR")
-    assert(intellij.options().jdk == vim.env.JAVA_HOME, "IntelliJ ignored JAVA_HOME")
-
-    local explicit_opts = vim.deepcopy(env_opts)
-    explicit_opts.server_dir = fixture .. "/explicit"
-    explicit_opts.jdk = false
-    intellij_plugin.config(intellij_plugin, explicit_opts)
-    assert(server.find() == fixture .. "/explicit/bin/intellij-server", "Explicit server_dir did not take precedence")
-    assert(intellij.options().jdk == false, "Explicit JDK configuration was overwritten")
-    vim.env.INTELLIJ_SERVER_DIR = nil
-    vim.env.JAVA_HOME = nil
-    intellij_plugin.config(intellij_plugin, original_opts)
-    vim.fn.delete(fixture, "rf")
-    vim.fn.delete(cached_server, "rf")
 
     if not external_bin then
       -- Initialize Astro without a project TypeScript install to exercise the SDK fallback.
@@ -226,9 +182,7 @@ vim.schedule(function()
     end
 
     print(
-      "Tools: "
-        .. (external_bin and "external precedence" or "bundled fallback")
-        .. ", Astro, ConformInfo, and IntelliJ overrides passed"
+      "Tools: " .. (external_bin and "external precedence" or "bundled fallback") .. ", Astro, and ConformInfo passed"
     )
   end, debug.traceback)
 

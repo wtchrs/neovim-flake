@@ -79,45 +79,34 @@ Java integration.
 The wrapper disables watcher downloads with `CODEDIFF_WATCHER_NO_AUTO_INSTALL=1`.
 Without a watcher, CodeDiff automatically refreshes by polling every 500 ms.
 
-## Java: IntelliJ language server
+## Java: jdtls
 
-Nix bundles JetBrains' `intellij-server`,
-[nvim-intellij-lsp](https://github.com/gipo355/nvim-intellij-lsp).
+Java uses LazyVim's `lang.java` extra with the bundled Eclipse JDT Language
+Server (`jdtls`). Nix also provides Lombok and the Java debug and test bundles
+that the extra would otherwise install with Mason.
 
-After rebuilding, open a Java file in a Maven, Gradle, or Bazel project. Run
-`:IntellijAcceptEula` and accept the agreement, then start the server:
+- jdtls starts automatically for Java files in Maven, Gradle, or Git projects.
+- The bundled jdtls always runs on its own Nix JDK (currently 25), regardless of
+  the project's `JAVA_HOME`. A `jdtls` from the project's `PATH` takes
+  precedence and selects Java from `JAVA_HOME` or `PATH` instead.
+- The project's Java version comes from its build configuration. To analyze
+  against a specific JDK, optionally register it in jdtls'
+  `java.configuration.runtimes` setting.
+- Debug with nvim-dap.
 
-```vim
-:lsp enable intellij
-:checkhealth intellij-lsp
-```
+### Keybindings
 
-- Set `INTELLIJ_SERVER_DIR` to select an external server explicitly.
-- Set `JAVA_HOME` to select a project JDK; otherwise the first `javac` in `PATH`
-  determines the JDK.
-- Organize imports with `<leader>co`; run or debug with `:IntellijRun`,
-  `:IntellijDebug`, or nvim-dap.
-- The first import may take several minutes. Diagnose failures with
-  `:IntellijStatus` and `:IntellijLog`. Use one Neovim instance per project root.
-
-See [Updating bundled binaries](#updating-bundled-binaries) for update instructions.
-
-## Updating bundled binaries
-
-- IntelliJ (`nix/intellij-server.nix`): run `nix run .#check-intellij-server`
-  to print both platforms' server versions, archive URLs, and SHA-256 checksums
-  from the latest Open VSX extension.
-  Check client compatibility in `nix/plugins.nix`.
-  Avoid `:IntellijInstall` and `:IntellijUpdate` on NixOS.
-
-Change the package's `version`, set `hash = lib.fakeHash;`, and run
-`nix build .#default --no-link` from the repository root. Replace the fake hash
-with the quoted `got: sha256-...` value from the hash mismatch error.
-
-Update both `x86_64-linux` and `aarch64-linux` hashes. A local build fetches only
-the current platform; for the other archive, use the `hash` returned by
-`nix store prefetch-file --json --hash-type sha256 '<archive-url>'`
-without `--unpack`.
+| Key           | Mode           | Action                     |
+| ------------- | -------------- | -------------------------- |
+| `<leader>co`  | Normal         | Organize imports           |
+| `<leader>cxv` | Normal, Visual | Extract variable           |
+| `<leader>cxc` | Normal, Visual | Extract constant           |
+| `<leader>cxm` | Visual         | Extract method             |
+| `<leader>cgs` | Normal         | Go to super implementation |
+| `<leader>cgS` | Normal         | Go to test subjects        |
+| `<leader>tt`  | Normal         | Run all tests in the class |
+| `<leader>tr`  | Normal         | Run the nearest test       |
+| `<leader>tT`  | Normal         | Pick a test to run         |
 
 ## Dev shell
 

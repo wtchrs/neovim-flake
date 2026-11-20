@@ -2,7 +2,6 @@
 
 let
   appName = "nvim-store";
-  intellijServer = import ./intellij-server.nix { inherit pkgs lib; };
 
   # LazyVim uses Mason's executable name for the JavaScript debug adapter.
   jsDebugAdapter = pkgs.runCommand "js-debug-adapter" { } ''
@@ -42,6 +41,9 @@ let
     vim.opt.rtp:prepend("${pkgs.vimPlugins.lazy-nvim}")
     vim.g.astro_ts_plugin = "${pkgs.astro-language-server}/lib/node_modules/astro-language-server/packages/language-tools/ts-plugin"
     vim.g.astro_tsdk = "${pkgs.astro-language-server}/lib/node_modules/astro-language-server/packages/language-tools/language-server/node_modules/typescript/lib"
+    vim.g.jdtls_lombok_jar = "${pkgs.lombok}/share/java/lombok.jar"
+    vim.g.java_debug_dir = "${pkgs.vscode-extensions.vscjava.vscode-java-debug}/share/vscode/extensions/vscjava.vscode-java-debug/server"
+    vim.g.java_test_dir = "${pkgs.vscode-extensions.vscjava.vscode-java-test}/share/vscode/extensions/vscjava.vscode-java-test/server"
     local initLazy = require("config.lazy")
     initLazy("${lazyPath}", "${treesitterRuntime}")
     EOF
@@ -89,7 +91,7 @@ let
     vscode-langservers-extracted
     tinymist
     yaml-language-server
-    intellijServer
+    jdt-language-server
 
     # Formatters and linters, including LazyVim's default shell support.
     stylua

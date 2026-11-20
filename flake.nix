@@ -15,12 +15,7 @@
 
       forAllSystems = f: nixpkgs.lib.genAttrs systems f;
 
-      pkgsFor =
-        system:
-        import nixpkgs {
-          inherit system;
-          config.allowUnfreePredicate = pkg: nixpkgs.lib.getName pkg == "intellij-server";
-        };
+      pkgsFor = system: import nixpkgs { inherit system; };
 
       mkNvim =
         system:
@@ -33,24 +28,9 @@
         };
     in
     {
-      packages = forAllSystems (
-        system:
-        let
-          pkgs = pkgsFor system;
-        in
-        {
-          default = mkNvim system;
-          check-intellij-server = pkgs.writeShellApplication {
-            name = "check-intellij-server";
-            runtimeInputs = with pkgs; [
-              curl
-              libarchive
-              jq
-            ];
-            text = builtins.readFile ./scripts/check-intellij-server.sh;
-          };
-        }
-      );
+      packages = forAllSystems (system: {
+        default = mkNvim system;
+      });
 
       apps = forAllSystems (system: {
         default = {
@@ -66,7 +46,7 @@
           externalTools = pkgs.runCommand "neovim-external-tools" { } ''
             mkdir -p "$out/bin"
             for tool in git gcc make cmake nil stylua statix pyright-langserver \
-              dlv codelldb js-debug-adapter intellij-server javac rg fd xxd tree-sitter; do
+              dlv codelldb js-debug-adapter jdtls javac rg fd xxd tree-sitter; do
               cp ${pkgs.coreutils}/bin/true "$out/bin/$tool"
             done
           '';
@@ -79,7 +59,7 @@
               export XDG_CACHE_HOME="$TMPDIR/$mode/cache"
               export XDG_STATE_HOME="$TMPDIR/$mode/state"
               export PATH="${pkgs.coreutils}/bin"
-              unset INTELLIJ_SERVER_DIR JAVA_HOME TOOLS_EXTERNAL_BIN
+              unset JAVA_HOME TOOLS_EXTERNAL_BIN
               mkdir -p "$HOME"
 
               if [ "$mode" = external ]; then
